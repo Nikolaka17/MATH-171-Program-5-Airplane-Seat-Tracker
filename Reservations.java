@@ -1,7 +1,7 @@
 // Author: Nikolas Leslie
 // Date created: 11/5/22
-// Last modified: 11/6/22
-// Software for choosing a airplane seat
+// Last modified: 11/7/22
+// Software for reserving an airplane seat
 
 import java.util.Scanner;
 import java.awt.Point;
@@ -23,10 +23,8 @@ public class Reservations {
 
     public static void main(String[] args){
 
-        Scanner stdin = new Scanner(System.in);
         boolean[][] seatsTaken = new boolean[NUM_ROWS][NUM_COLUMNS];
-		int column;
-		int row;
+		Point seat;
 
         for(int i = 0; i < seatsTaken.length; i++){
             for(int j = 0; j < seatsTaken[i].length; j++){
@@ -36,32 +34,51 @@ public class Reservations {
 		
 		do{
 			
+			seat = displayMenu(seatsTaken);
+
+			if (seat == null){
+				continue;
+			}
+
 			try{
-				isValid(new Point(column, row));
+				isValid(seat);
 			}catch(IndexOutOfBoundsException e){
 				System.out.println(e.getMessage());
 			}catch(IllegalArgumentException e){
 				System.out.println("Exiting program");
 				System.exit(0);
 			}
+
+			if(seatsTaken[seat.y][seat.x]){
+				System.out.println("Sorry, that seat is currently taken.");
+			}else{
+				System.out.print("You have reserved the seat ");
+				System.out.print(seat.y);
+				System.out.print((char)(seat.y + 'A'));
+				System.out.print(" .\n");
+				seatsTaken[seat.y][seat.x] = true;
+			}
 			
 		}while(true);
     }
 
     public static void arrPrint(boolean[][] arr){
-		System.out.print("  ");
+		String[][] table = new String[NUM_ROWS + 1][NUM_COLUMNS + 1];
+		table[0][0] = " ";
 		for(int i = 1; i <= arr[i].length; i++){
-			System.out.print((char)(i + '@'));
-			System.out.print(" ");
+			table[0][i] = Character.toString((char)(i + '@'));
 		}
-		System.out.println();
         
 		for(int i = 0; i < arr.length; i++){
-			System.out.print(i);
-			System.out.print(" ");
-			for(int j = 0; j< arr[i].length; j++){
-				System.out.print((arr[i][j])? TAKEN_SEAT : OPEN_SEAT);
-				System.out.print(" ");
+			table[i+1][0] = Integer.toString(i + 1);
+			for(int j = 0; j < arr[i].length; j++){
+				table[i+1][j+1] = Character.toString((arr[i][j])? TAKEN_SEAT : OPEN_SEAT);
+			}
+		}
+
+		for(String[] row : table){
+			for(String item : row){
+				System.out.printf("%5s", item);
 			}
 			System.out.println();
 		}
@@ -78,6 +95,105 @@ public class Reservations {
 			}
 		}else if(seat.y < 1 || seat.y > NUM_ROWS){
 			throw new IndexOutOfBoundsException("Row is invalid");
+		}
+	}
+
+	public static Point displayMenu(boolean[][] seats){
+		Scanner stdin = new Scanner(System.in);
+
+		System.out.println("Current reservations: ");
+		arrPrint(seats);
+		System.out.println("\nWould you like to reserve a seat or exit?\n");
+		System.out.println("\tA) Reserve a seat\n\tB) Quit\n");
+
+		String choice = stdin.nextLine();
+		switch (choice.toUpperCase()){
+			case "RESERVE": case "R": case "A": case "RESERVE A SEAT":
+				int column = 0;
+				int row = 0;
+				Classes section = null;
+				boolean notValidSection = true;
+				boolean notValidRow = true;
+				boolean notValidColumn = true;
+				while(notValidSection){
+					System.out.print("What area would you like to sit in? ");
+					String area = stdin.nextLine();
+					switch(area.toUpperCase()){
+						case "FIRST": case "FIRST CLASS": case "F":
+							section = Classes.FIRST;
+							notValidSection = false;
+							break;
+						case "BUSINESS": case "BUSINESS CLASS": case "B":
+							section = Classes.BUSINESS;
+							notValidSection = false;
+							break;
+						case "ECONOMY": case "ECON": case "ECONOMY CLASS": case "ECON CLASS": case "E":
+							section = Classes.ECONOMY;
+							notValidSection = false;
+							break;
+						default: 
+							System.out.println("That isn't a valid area. Valid areas are First, Business, and Economy.");
+							break;
+					}
+				}
+				while(notValidRow){
+					System.out.print("What row number is your seat? (Numbers for ");
+					switch(section){
+						case FIRST:
+							System.out.print("first class are ");
+							for (int i = 1; i <= FIRST_CLASS_END; i++){
+								System.out.print(i);
+								System.out.print(", ");
+							}
+							System.out.print("\b\b) ");
+							break;
+						case BUSINESS:
+							System.out.println("business class are ");
+							for (int i = FIRST_CLASS_END + 1; i<= BUSINESS_CLASS_END; i++){
+								System.out.print(i);
+								System.out.print(", ");
+							}
+							System.out.print("\b\b) ");
+							break;
+						case ECONOMY:
+							System.out.println("economy class are ");
+							for (int i = BUSINESS_CLASS_END + 1; i <= NUM_ROWS; i++){
+								System.out.print(i);
+								System.out.print(", ");
+							}
+							System.out.print("\b\b) ");
+							break;
+					}
+					if(stdin.hasNextInt()){
+						row = stdin.nextInt() - 1;
+						notValidRow = false;
+					}else{
+						System.out.println("Please enter a valid number");
+					}
+				}
+				while(notValidColumn){
+					stdin.nextLine();
+					System.out.print("What column would you like? (Columns are ");
+					for(int i = 0; i < NUM_COLUMNS; i++){
+						System.out.print((char)(i + 'A'));
+						System.out.print(", ");
+					}
+					System.out.print("\b\b) ");
+					String columnChoice = stdin.nextLine();
+
+					if (columnChoice.length() == 1){
+						column = columnChoice.toUpperCase().charAt(0) - 'A';
+						notValidColumn = false;
+					}else{
+						System.out.println("Please enter a single letter representing the column");
+					}
+				}
+				return new Point(column, row);
+			case "QUIT": case "Q": case "B":
+				return new Point(-1, -1);
+			default:
+				System.out.println("Input not reconized please try again.");
+				return null;
 		}
 	}
 }
