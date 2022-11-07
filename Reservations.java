@@ -62,6 +62,11 @@ public class Reservations {
 		}while(true);
     }
 
+	/**
+	 * Prints a formatted representation of the argument
+	 * @author Nikolas Leslie
+	 * @param arr An array of booleans to print
+	 */
     public static void arrPrint(boolean[][] arr){
 		String[][] table = new String[NUM_ROWS + 1][NUM_COLUMNS + 1];
 		table[0][0] = " ";
@@ -84,6 +89,13 @@ public class Reservations {
 		}
     }
 	
+	/**
+	 * Tests if the given input point is valid
+	 * @author Nikolas Leslie
+	 * @param seat The point (x,y) value to be tested
+	 * @throws IndexOutOfBoundsException Tells if given column and/or row number is in the bounds
+	 * @throws IllegalArgumentException Thrown if exit input is given
+	 */
 	public static void isValid(Point seat){
 		if(seat.x == -1 && seat.y == -1){
 			throw new IllegalArgumentException("Default exception input given");
@@ -98,6 +110,12 @@ public class Reservations {
 		}
 	}
 
+	/**
+	 * Gathers input from the user
+	 * @author Nikolas Leslie
+	 * @param seats The array to print out for the menu
+	 * @return A point representation or the seat number the user gives
+	 */
 	public static Point displayMenu(boolean[][] seats){
 		Scanner stdin = new Scanner(System.in);
 
