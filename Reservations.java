@@ -1,6 +1,6 @@
 // Author: Nikolas Leslie
 // Date created: 11/5/22
-// Last modified: 11/7/22
+// Last modified: 11/10/22
 // Software for reserving an airplane seat
 
 import java.util.Scanner;
@@ -44,6 +44,7 @@ public class Reservations {
 				isValid(seat);
 			}catch(IndexOutOfBoundsException e){
 				System.out.println(e.getMessage());
+				continue;
 			}catch(IllegalArgumentException e){
 				System.out.println("Exiting program");
 				System.exit(0);
@@ -53,7 +54,7 @@ public class Reservations {
 				System.out.println("Sorry, that seat is currently taken.");
 			}else{
 				System.out.print("You have reserved the seat ");
-				System.out.print(seat.y);
+				System.out.print(seat.x + 1);
 				System.out.print((char)(seat.y + 'A'));
 				System.out.print(" .\n");
 				seatsTaken[seat.y][seat.x] = true;
@@ -99,13 +100,13 @@ public class Reservations {
 	public static void isValid(Point seat){
 		if(seat.x == -1 && seat.y == -1){
 			throw new IllegalArgumentException("Default exception input given");
-		}else if(seat.x < 1 || seat.x > NUM_COLUMNS){
-			if(seat.y < 1 || seat.y > NUM_ROWS){
+		}else if(seat.x < 0 || seat.x > NUM_COLUMNS){
+			if(seat.y < 0 || seat.y > NUM_ROWS){
 				throw new IndexOutOfBoundsException("Both column and row are invalid");
 			}else{
 				throw new IndexOutOfBoundsException("Column is invalid");
 			}
-		}else if(seat.y < 1 || seat.y > NUM_ROWS){
+		}else if(seat.y < 0 || seat.y > NUM_ROWS){
 			throw new IndexOutOfBoundsException("Row is invalid");
 		}
 	}
