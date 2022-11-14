@@ -97,7 +97,7 @@ public class Reservations {
 	 * @throws IndexOutOfBoundsException Tells if given column and/or row number is in the bounds
 	 * @throws IllegalArgumentException Thrown if exit input is given
 	 */
-	public static void isValid(Point seat){
+	public static void isValid(Point seat) throws IllegalArgumentException, IndexOutOfBoundsException{
 		if(seat.x == -1 && seat.y == -1){
 			throw new IllegalArgumentException("Default exception input given");
 		}else if(seat.x < 0 || seat.x > NUM_COLUMNS){
