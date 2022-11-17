@@ -1,6 +1,6 @@
 // Author: Nikolas Leslie
 // Date created: 11/5/22
-// Last modified: 11/10/22
+// Last modified: 11/17/22
 // Software for reserving an airplane seat
 
 import java.util.Scanner;
@@ -9,7 +9,7 @@ import java.awt.Point;
 public class Reservations {
 
     final static int NUM_ROWS = 15;
-    final static int NUM_COLUMNS = 5;
+    final static int NUM_COLUMNS = 5; //More than 26 leads to special characters
 	final static int FIRST_CLASS_END = 2;
 	final static int BUSINESS_CLASS_END = 6;
     final static char OPEN_SEAT = 'O';
@@ -69,24 +69,23 @@ public class Reservations {
 	 * @param arr An array of booleans to print
 	 */
     public static void arrPrint(boolean[][] arr){
-		String[][] table = new String[NUM_ROWS + 1][NUM_COLUMNS + 1];
-		table[0][0] = " ";
-		for(int i = 1; i <= arr[i].length; i++){
-			table[0][i] = Character.toString((char)(i + '@'));
-		}
-        
-		for(int i = 0; i < arr.length; i++){
-			table[i+1][0] = Integer.toString(i + 1);
-			for(int j = 0; j < arr[i].length; j++){
-				table[i+1][j+1] = Character.toString((arr[i][j])? TAKEN_SEAT : OPEN_SEAT);
+		for(int i = 0; i <= NUM_COLUMNS; i++){
+			if (i == 0){
+				System.out.printf("%5s", " ");
+			}else{
+				System.out.printf("%5s",(char) (i + '@'));
 			}
 		}
-
-		for(String[] row : table){
-			for(String item : row){
-				System.out.printf("%5s", item);
+		System.out.println();
+		
+		int i = 1;
+		for(boolean[] row : arr){
+			System.out.printf("%5s", i);
+			for(boolean item : row){
+				System.out.printf("%5s", (item)? TAKEN_SEAT : OPEN_SEAT);
 			}
 			System.out.println();
+			i++;
 		}
     }
 	
